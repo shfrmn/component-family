@@ -9,3 +9,12 @@
 .task > button {
   margin-left: 0.5rem;
 }
+
+.placeholder {
+  margin-bottom: 20px;
+  padding: 10px;
+  min-width: 200px;
+  height: 20px;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+}
