@@ -3,7 +3,7 @@ import {useTour} from "../../hooks/useTour"
 import style from "./TaskList.module.css"
 import {TaskList} from "./"
 
-export function TaskListTour() {
+export default function TaskListTour() {
   const {tourCompleted, tourStep, tourMessage} = useTour()
   return (
     <>
