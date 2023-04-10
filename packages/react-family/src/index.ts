@@ -1,14 +1,23 @@
 import {createFamilyComponent} from "./Family"
 import {createVariantComponent} from "./Variant"
-import {AnyFamilyConfig, FamilyComponent} from "./Types"
+import {AnyFamilyConfig, FamilyComponentWithVariants} from "./Types"
 
+/**
+ * Creates a `FamilyComponent` that dynamically renders variants based on `FamilyContext`,
+ * with all specific variants available as properties.
+ *
+ * ```
+ * <MyComponent />          // Renders variants dynamically
+ * <MyComponent.Variant1 /> // Renders Variant1 explicitly
+ * ```
+ */
 export function createFamily<Conf extends AnyFamilyConfig>(
   familyConfig: Conf
-): FamilyComponent<Conf> {
+): FamilyComponentWithVariants<Conf> {
   const FamilyComponent = createFamilyComponent(familyConfig)
-  for (const family in familyConfig) {
+  for (const variant in familyConfig) {
     // @ts-ignore
-    FamilyComponent[family] = createVariantComponent(family, FamilyComponent)
+    FamilyComponent[variant] = createVariantComponent(variant, FamilyComponent)
   }
-  return FamilyComponent as FamilyComponent<Conf>
+  return FamilyComponent as FamilyComponentWithVariants<Conf>
 }

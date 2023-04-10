@@ -18,15 +18,15 @@ function App() {
       <div>
         <h2>Widget</h2>
         <TaskList.Widget
-          fallbackFamilies={["Layout"]}
-          placeholderFamily="Placeholder"
+          fallbackVariants={["Layout"]}
+          placeholderVariant="Placeholder"
         />
       </div>
       <div>
         <h2>Tour</h2>
         <TaskList.Tour
-          fallbackFamilies={["Widget", "Layout"]}
-          placeholderFamily="Placeholder"
+          fallbackVariants={["Widget", "Layout"]}
+          placeholderVariant="Placeholder"
         />
       </div>
     </div>

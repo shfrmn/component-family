@@ -1,15 +1,9 @@
-import {
-  ComponentProps,
-  ComponentType,
-  ExoticComponent,
-  Suspense,
-  useContext,
-} from "react"
+import {ComponentType, ExoticComponent, Suspense, useContext} from "react"
 import {FamilyContext} from "./Context"
-import {AnyFamilyConfig, FamilyComponent} from "./Types"
+import {AnyFamilyConfig, FamilyProps, FamilyComponent} from "./Types"
 
 /**
- *
+ * Type guard used to determine whether the component is being lazy loaded.
  */
 function isExoticComponent(
   component: ExoticComponent<any> | ComponentType<any>
@@ -18,53 +12,61 @@ function isExoticComponent(
 }
 
 /**
- *
+ * Empty placeholder used when no placeholder family is provided for lazy loading.
  */
-function NoPlaceholder(_props: {}) {
+function NoPlaceholder<P extends {}>(_props: P) {
   return null
 }
 
 /**
- *
+ * Selects a component variant to be rendered according to the ranked list of variants.
+ * If none of the variants are available, throws an error.
  */
-function selectFamilyComponent<Conf extends AnyFamilyConfig>(
+function selectVariant<Conf extends AnyFamilyConfig>(
   familyConfig: Conf,
-  families: (keyof Conf)[]
+  variants: (keyof Conf)[]
 ): ExoticComponent<any> | ComponentType<any> {
-  for (const family of families) {
-    const Component = familyConfig[family]
-    if (Component) return Component
+  for (const family of variants) {
+    const Variant = familyConfig[family]
+    if (Variant) {
+      return Variant
+    }
   }
-  throw new Error("No component")
+  const requestedVariants = variants.join(", ")
+  const availableVariants = Object.keys(familyConfig).join(", ")
+  throw new Error(
+    `Missing requested variants: ${requestedVariants}. Variants available: ${availableVariants}`
+  )
 }
 
 /**
- *
+ * Creates a component that dynamically renders variants based on `FamilyContext`
  */
 export function createFamilyComponent<Conf extends AnyFamilyConfig>(
   familyConfig: Conf
 ): FamilyComponent<Conf> {
-  function Family(
-    props: ComponentProps<Conf[keyof Conf]> & {family: keyof Conf}
-  ) {
+  return function Family(props: FamilyProps<Conf>) {
     const context = useContext(FamilyContext)
-    if (!context) throw new Error("no family context")
-    const {families, placeholderFamily} = context
-    const Component = selectFamilyComponent(familyConfig, [
-      props.family,
-      ...families,
-    ])
-    if (!isExoticComponent(Component)) {
-      return <Component {...props} />
+    if (!context) {
+      throw new Error(
+        "Component family can't be rendered outside of FamilyContext. Please select a specific variant of the component."
+      )
     }
-    const Placeholder = placeholderFamily
-      ? familyConfig[placeholderFamily]
+    const {variants, placeholderVariant} = context
+    const Variant = selectVariant(
+      familyConfig,
+      props.variant ? [props.variant, ...variants] : variants
+    )
+    if (!isExoticComponent(Variant)) {
+      return <Variant {...props} />
+    }
+    const Placeholder = placeholderVariant
+      ? familyConfig[placeholderVariant]
       : NoPlaceholder
     return (
       <Suspense fallback={<Placeholder {...props} />}>
-        <Component {...props} />
+        <Variant {...props} />
       </Suspense>
     )
   }
-  return Family as FamilyComponent<Conf>
 }
