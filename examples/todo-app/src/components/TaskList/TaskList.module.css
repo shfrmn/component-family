@@ -1,0 +1,28 @@
+.tourDialogContainer {
+  position: relative;
+  left: 10px;
+  top: 170px;
+  width: fit-content;
+  height: 0;
+  opacity: 1;
+  transition: left 0.2s ease-in, opacity 0.15s ease-out;
+}
+
+.tourDialogContainer.shifted {
+  left: 100px;
+}
+
+.tourDialogContainer.tourCompleted {
+  left: 1000px;
+  opacity: 0;
+  max-height: 0;
+}
+
+.tourDialog {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: slateblue;
+  color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  text-align: center;
+}
