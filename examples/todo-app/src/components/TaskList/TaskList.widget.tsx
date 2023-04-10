@@ -1,11 +1,11 @@
 import {useEffect} from "react"
+import {TaskList} from "./"
 import {useApi} from "../../hooks/useApi"
-import {TaskListLayout} from "./TaskList.layout"
 
 export default function TaskListWidget() {
   const {tasks, listTasks} = useApi()
   useEffect(() => {
     listTasks()
   }, [])
-  return <TaskListLayout tasks={tasks} />
+  return <TaskList.Layout tasks={tasks} />
 }

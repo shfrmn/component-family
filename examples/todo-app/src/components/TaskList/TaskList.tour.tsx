@@ -1,7 +1,7 @@
 import classnames from "classnames"
+import {TaskList} from "./"
 import {useTour} from "../../hooks/useTour"
 import style from "./TaskList.module.css"
-import {TaskList} from "./"
 
 export default function TaskListTour() {
   const {tourCompleted, tourStep, tourMessage} = useTour()

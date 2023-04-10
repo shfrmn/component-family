@@ -1,6 +1,6 @@
 import {useApi} from "../../hooks/useApi"
 import {useTour} from "../../hooks/useTour"
-import {TaskLayout} from "./Task.layout"
+import {Task} from "./"
 
 interface TaskWidgetProps {
   task: {
@@ -16,7 +16,7 @@ export default function TaskTour(props: TaskWidgetProps) {
   const isInputEnabled = tourCompleted || (task.id === 3 && tourStep === 0)
   const isButtonEnabled = tourCompleted || (task.id === 3 && tourStep > 0)
   return (
-    <TaskLayout
+    <Task.Layout
       task={task}
       onChange={tourCompleted ? undefined : () => completeStep()}
       onSave={tourCompleted ? saveTask : () => completeStep()}
