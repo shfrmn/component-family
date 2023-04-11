@@ -3,7 +3,7 @@ import {ErrorBoundary} from "react-error-boundary"
 import {prependIcon, getFamilyComponentName} from "./DevTools"
 import {AnyFamilyConfig, FamilyComponent} from "./Types"
 import {FamilyContext} from "./Context"
-import {Lazy} from "./Lazy"
+import {suspendLazy} from "./Lazy"
 
 /**
  * Selects a component variant to be rendered according to the ranked list of variants.
@@ -34,7 +34,7 @@ export function createFamilyComponent<Conf extends AnyFamilyConfig>(
   componentName?: string
 ): FamilyComponent<Conf> {
   const Family: FamilyComponent<Conf> = (props) => {
-    const {variant: variantOverride, isVariantRoot} = props
+    const {variant: variantOverride, isVariantRoot, ...forwardProps} = props
     const isFamilyRoot = Boolean(!variantOverride || isVariantRoot)
     const context = useContext(FamilyContext)
     if (!context) {
@@ -50,10 +50,10 @@ export function createFamilyComponent<Conf extends AnyFamilyConfig>(
     const LazyFallback = placeholderVariant
       ? familyConfig[placeholderVariant]
       : undefined
-    const LazyLoaded = Lazy({
+    const LazyLoaded = suspendLazy({
+      props: forwardProps,
       component: Variant,
       fallback: LazyFallback,
-      ...props,
     })
     const ErrorFallback = errorVariant ? familyConfig[errorVariant] : undefined
     if (ErrorFallback && isFamilyRoot) {

@@ -9,13 +9,16 @@ function isExoticComponent(
   return Boolean((component as ExoticComponent).$$typeof)
 }
 
-interface LazyProps<P> {
+interface SuspendLazyOptions<P> {
+  props: P
   component: ComponentType<P>
   fallback?: ComponentType<P>
 }
 
-export function Lazy<P>(props: P & LazyProps<P>) {
-  const {component: Component, fallback: Fallback} = props
+export function suspendLazy<P extends JSX.IntrinsicAttributes>(
+  options: SuspendLazyOptions<P>
+) {
+  const {component: Component, fallback: Fallback, props} = options
   if (!isExoticComponent(Component)) {
     return <Component {...props} />
   }
