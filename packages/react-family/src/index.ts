@@ -5,6 +5,29 @@ import {AnyFamilyConfig, FamilyComponentWithVariants} from "./Types"
 export {useErrorBoundary} from "react-error-boundary"
 
 /**
+ *
+ */
+type CreateFamilyOptions = AnyFamilyConfig | FullOptions
+
+/**
+ *
+ */
+interface FullOptions {
+  name?: string
+  variants: AnyFamilyConfig
+}
+
+/**
+ *
+ */
+function normalizeOptions(options: CreateFamilyOptions): FullOptions {
+  return {
+    name: options.name,
+    variants: options.variants || options,
+  } as FullOptions
+}
+
+/**
  * Creates a `FamilyComponent` that dynamically renders variants based on `FamilyContext`,
  * with all specific variants available as properties.
  *
@@ -14,9 +37,14 @@ export {useErrorBoundary} from "react-error-boundary"
  * ```
  */
 export function createFamily<Conf extends AnyFamilyConfig>(
-  familyConfig: Conf
+  options: CreateFamilyOptions
 ): FamilyComponentWithVariants<Conf> {
-  const FamilyComponent = createFamilyComponent(familyConfig)
+  const {name: familyComponentName, variants: familyConfig} =
+    normalizeOptions(options)
+  const FamilyComponent = createFamilyComponent(
+    familyConfig,
+    familyComponentName
+  )
   for (const variant in familyConfig) {
     // @ts-ignore
     FamilyComponent[variant] = createVariantComponent(variant, FamilyComponent)

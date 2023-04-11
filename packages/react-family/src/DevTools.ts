@@ -16,7 +16,7 @@ const ICON = "💠"
 /**
  *
  */
-export function appendIcon(componentName: string) {
+export function prependIcon(componentName: string) {
   return `${ICON}${componentName}`
 }
 
@@ -40,5 +40,5 @@ export function getFamilyComponentName<Conf extends AnyFamilyConfig>(
       break
     }
   }
-  return appendIcon(name || "Family")
+  return prependIcon(name || "Family")
 }

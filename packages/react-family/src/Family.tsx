@@ -1,6 +1,6 @@
 import {ComponentType, ExoticComponent, useContext} from "react"
 import {ErrorBoundary} from "react-error-boundary"
-import {getFamilyComponentName} from "./DevTools"
+import {prependIcon, getFamilyComponentName} from "./DevTools"
 import {AnyFamilyConfig, FamilyComponent} from "./Types"
 import {FamilyContext} from "./Context"
 import {Lazy} from "./Lazy"
@@ -30,7 +30,8 @@ function selectVariant<Conf extends AnyFamilyConfig>(
  * Creates a component that dynamically renders variants based on `FamilyContext`
  */
 export function createFamilyComponent<Conf extends AnyFamilyConfig>(
-  familyConfig: Conf
+  familyConfig: Conf,
+  componentName?: string
 ): FamilyComponent<Conf> {
   const Family: FamilyComponent<Conf> = (props) => {
     const {variant: variantOverride, isVariantRoot} = props
@@ -65,6 +66,9 @@ export function createFamilyComponent<Conf extends AnyFamilyConfig>(
       return LazyLoaded
     }
   }
-  Family.displayName = getFamilyComponentName(familyConfig)
+  Family.displayName = componentName
+    ? prependIcon(componentName)
+    : getFamilyComponentName(familyConfig)
+  FamilyContext.displayName = prependIcon("FamilyContext")
   return Family
 }

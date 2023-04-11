@@ -38,6 +38,6 @@ export function createVariantComponent<Conf extends AnyFamilyConfig>(
       </FamilyContext.Provider>
     )
   }
-  Variant.displayName = FamilyComponent.displayName + "." + (variant as string)
+  Variant.displayName = `${FamilyComponent.displayName}.${variant as string}`
   return Variant
 }

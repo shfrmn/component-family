@@ -37,5 +37,3 @@ export interface FamilyContextType {
 export const FamilyContext = createContext(
   undefined as FamilyContextType | undefined
 )
-
-FamilyContext.displayName = "💠FamilyContext"
