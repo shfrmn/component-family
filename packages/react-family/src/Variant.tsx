@@ -2,7 +2,6 @@ import {useContext} from "react"
 import {
   AnyFamilyConfig,
   FamilyComponent,
-  VariantProps,
   VariantComponent,
   FamilyProps,
 } from "./Types"
@@ -16,7 +15,7 @@ export function createVariantComponent<Conf extends AnyFamilyConfig>(
   familyConfig: Conf,
   FamilyComponent: FamilyComponent<Conf>
 ): VariantComponent<Conf, keyof Conf> {
-  return function Variant(props: VariantProps<Conf>) {
+  const Variant: VariantComponent<Conf, keyof Conf> = (props) => {
     const {variants} = props
     const inheritedContext = useContext(FamilyContext)
     const context = inheritedContext || {
@@ -40,4 +39,6 @@ export function createVariantComponent<Conf extends AnyFamilyConfig>(
       </FamilyContext.Provider>
     )
   }
+  Variant.displayName = FamilyComponent.displayName + "." + (variant as string)
+  return Variant
 }

@@ -24,10 +24,6 @@ export function createFamily<Conf extends AnyFamilyConfig>(
       familyConfig,
       FamilyComponent
     )
-    // @ts-ignore
-    FamilyComponent[variant].displayName = "🟣Variant/" + variant
-    familyConfig[variant].displayName = "⚛️" + familyConfig[variant].name
   }
-  FamilyComponent.displayName = "💠Family"
   return FamilyComponent as FamilyComponentWithVariants<Conf>
 }

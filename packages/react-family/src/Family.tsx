@@ -1,8 +1,37 @@
 import {ComponentType, ExoticComponent, useContext} from "react"
-import {ErrorBoundary} from "react-error-boundary"
-import {AnyFamilyConfig, FamilyProps, FamilyComponent} from "./Types"
+import {ErrorBoundary, ErrorBoundaryContext} from "react-error-boundary"
+import {AnyFamilyConfig, FamilyComponent} from "./Types"
 import {FamilyContext} from "./Context"
 import {Lazy} from "./Lazy"
+
+/**
+ *
+ */
+;(ErrorBoundary as ComponentType<any>).displayName = "ErrorBoundary"
+ErrorBoundaryContext.displayName = "ErrorBoundaryContext"
+
+/**
+ *
+ */
+function getFamilyComponentName<Conf extends AnyFamilyConfig>(
+  familyConfig: Conf
+): string {
+  const componentNames = Object.values(familyConfig)
+    .map((component) => component.name)
+    .filter((name) => name)
+  const maxLength = Math.max(...componentNames.map((name) => name.length))
+  let name = ""
+  for (let i = 0; i < maxLength; i++) {
+    const char = componentNames[0][i]
+    const isSameChar = componentNames.every((name) => name[i] === char)
+    if (isSameChar) {
+      name += char
+    } else {
+      break
+    }
+  }
+  return "💠" + (name || "Family")
+}
 
 /**
  * Selects a component variant to be rendered according to the ranked list of variants.
@@ -31,7 +60,7 @@ function selectVariant<Conf extends AnyFamilyConfig>(
 export function createFamilyComponent<Conf extends AnyFamilyConfig>(
   familyConfig: Conf
 ): FamilyComponent<Conf> {
-  return function Family(props: FamilyProps<Conf>) {
+  const Family: FamilyComponent<Conf> = (props) => {
     const {variant: variantOverride, isVariantRoot} = props
     const isFamilyRoot = Boolean(!variantOverride || isVariantRoot)
     const context = useContext(FamilyContext)
@@ -64,4 +93,6 @@ export function createFamilyComponent<Conf extends AnyFamilyConfig>(
       return LazyLoaded
     }
   }
+  Family.displayName = getFamilyComponentName(familyConfig)
+  return Family
 }
