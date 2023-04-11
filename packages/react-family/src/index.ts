@@ -19,11 +19,7 @@ export function createFamily<Conf extends AnyFamilyConfig>(
   const FamilyComponent = createFamilyComponent(familyConfig)
   for (const variant in familyConfig) {
     // @ts-ignore
-    FamilyComponent[variant] = createVariantComponent(
-      variant,
-      familyConfig,
-      FamilyComponent
-    )
+    FamilyComponent[variant] = createVariantComponent(variant, FamilyComponent)
   }
   return FamilyComponent as FamilyComponentWithVariants<Conf>
 }

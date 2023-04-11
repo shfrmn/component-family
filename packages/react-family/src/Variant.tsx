@@ -12,7 +12,6 @@ import {FamilyContext, FamilyContextType} from "./Context"
  */
 export function createVariantComponent<Conf extends AnyFamilyConfig>(
   variant: keyof Conf,
-  familyConfig: Conf,
   FamilyComponent: FamilyComponent<Conf>
 ): VariantComponent<Conf, keyof Conf> {
   const Variant: VariantComponent<Conf, keyof Conf> = (props) => {
