@@ -1,22 +1,8 @@
-import {ComponentType, ExoticComponent, Suspense, useContext} from "react"
-import {FamilyContext} from "./Context"
+import {ComponentType, ExoticComponent, useContext} from "react"
+import {ErrorBoundary} from "react-error-boundary"
 import {AnyFamilyConfig, FamilyProps, FamilyComponent} from "./Types"
-
-/**
- * Type guard used to determine whether the component is being lazy loaded.
- */
-function isExoticComponent(
-  component: ExoticComponent<any> | ComponentType<any>
-): component is ExoticComponent<any> {
-  return Boolean((component as ExoticComponent).$$typeof)
-}
-
-/**
- * Empty placeholder used when no placeholder family is provided for lazy loading.
- */
-function NoPlaceholder<P extends {}>(_props: P) {
-  return null
-}
+import {FamilyContext} from "./Context"
+import {Lazy} from "./Lazy"
 
 /**
  * Selects a component variant to be rendered according to the ranked list of variants.
@@ -26,8 +12,8 @@ function selectVariant<Conf extends AnyFamilyConfig>(
   familyConfig: Conf,
   variants: (keyof Conf)[]
 ): ExoticComponent<any> | ComponentType<any> {
-  for (const family of variants) {
-    const Variant = familyConfig[family]
+  for (const variant of variants) {
+    const Variant = familyConfig[variant]
     if (Variant) {
       return Variant
     }
@@ -46,27 +32,36 @@ export function createFamilyComponent<Conf extends AnyFamilyConfig>(
   familyConfig: Conf
 ): FamilyComponent<Conf> {
   return function Family(props: FamilyProps<Conf>) {
+    const {variant: variantOverride, isVariantRoot} = props
+    const isFamilyRoot = Boolean(!variantOverride || isVariantRoot)
     const context = useContext(FamilyContext)
     if (!context) {
       throw new Error(
         "Component family can't be rendered outside of FamilyContext. Please select a specific variant of the component."
       )
     }
-    const {variants, placeholderVariant} = context
+    const {variants, placeholderVariant, errorVariant} = context
     const Variant = selectVariant(
       familyConfig,
       props.variant ? [props.variant, ...variants] : variants
     )
-    if (!isExoticComponent(Variant)) {
-      return <Variant {...props} />
-    }
-    const Placeholder = placeholderVariant
+    const LazyFallback = placeholderVariant
       ? familyConfig[placeholderVariant]
-      : NoPlaceholder
-    return (
-      <Suspense fallback={<Placeholder {...props} />}>
-        <Variant {...props} />
-      </Suspense>
-    )
+      : undefined
+    const LazyLoaded = Lazy({
+      component: Variant,
+      fallback: LazyFallback,
+      ...props,
+    })
+    const ErrorFallback = errorVariant ? familyConfig[errorVariant] : undefined
+    if (ErrorFallback && isFamilyRoot) {
+      return (
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+          {LazyLoaded}
+        </ErrorBoundary>
+      )
+    } else {
+      return LazyLoaded
+    }
   }
 }

@@ -2,6 +2,8 @@ import {createFamilyComponent} from "./Family"
 import {createVariantComponent} from "./Variant"
 import {AnyFamilyConfig, FamilyComponentWithVariants} from "./Types"
 
+export {useErrorBoundary} from "react-error-boundary"
+
 /**
  * Creates a `FamilyComponent` that dynamically renders variants based on `FamilyContext`,
  * with all specific variants available as properties.
@@ -17,7 +19,15 @@ export function createFamily<Conf extends AnyFamilyConfig>(
   const FamilyComponent = createFamilyComponent(familyConfig)
   for (const variant in familyConfig) {
     // @ts-ignore
-    FamilyComponent[variant] = createVariantComponent(variant, FamilyComponent)
+    FamilyComponent[variant] = createVariantComponent(
+      variant,
+      familyConfig,
+      FamilyComponent
+    )
+    // @ts-ignore
+    FamilyComponent[variant].displayName = "🟣Variant/" + variant
+    familyConfig[variant].displayName = "⚛️" + familyConfig[variant].name
   }
+  FamilyComponent.displayName = "💠Family"
   return FamilyComponent as FamilyComponentWithVariants<Conf>
 }

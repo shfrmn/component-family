@@ -1,4 +1,5 @@
 import {useState} from "react"
+import {useErrorBoundary} from "../../../../../packages/react-family/src"
 import style from "./Task.module.css"
 
 interface TaskLayoutProps {
@@ -20,12 +21,15 @@ export function TaskLayout(props: TaskLayoutProps) {
     onChange,
     onSave,
   } = props
-  const [modifiedTitle, setModifiedTitle] = useState("")
+  const [modifiedTitle, setModifiedTitle] = useState(
+    undefined as string | undefined
+  )
+  const {showBoundary} = useErrorBoundary()
   return (
     <div className={style.task}>
       <input
         type="text"
-        value={modifiedTitle || task.title}
+        value={modifiedTitle ?? task.title}
         onChange={(e) => {
           const title = e.target.value
           setModifiedTitle(title)
@@ -34,8 +38,14 @@ export function TaskLayout(props: TaskLayoutProps) {
         disabled={!isInputEnabled}
       />
       <button
-        disabled={!isButtonEnabled}
-        onClick={() => onSave?.(task.id, modifiedTitle)}
+        disabled={!isButtonEnabled || typeof modifiedTitle === "undefined"}
+        onClick={() => {
+          if (modifiedTitle) {
+            onSave?.(task.id, modifiedTitle)
+          } else if (!modifiedTitle?.length) {
+            showBoundary(new Error("Enter a task name to save"))
+          }
+        }}
       >
         Save
       </button>

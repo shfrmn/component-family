@@ -3,7 +3,7 @@ import {createContext} from "react"
 /**
  * Datatype that can be stored within `FamilyContext`
  */
-interface FamilyContextType {
+export interface FamilyContextType {
   /**
    * Variants that can be rendered under the given context, ranked by priority.
    * If the first variant in the array is not available for a component,
@@ -12,10 +12,16 @@ interface FamilyContextType {
   variants: string[]
 
   /**
-   * Component variant used as a placeholder during lazy loading.
-   * If no family is specified, nothing will be rendered until the component loads.
+   * Component variant used as a fallback during lazy loading.
+   * If no variant is specified, nothing will be rendered until the component loads.
    */
   placeholderVariant?: string
+
+  /**
+   * Component variant used as a fallback for the ErrorBoundary.
+   * If no variant is specified, no ErrorBoundary will be added.
+   */
+  errorVariant?: string
 }
 
 /**
@@ -31,3 +37,5 @@ interface FamilyContextType {
 export const FamilyContext = createContext(
   undefined as FamilyContextType | undefined
 )
+
+FamilyContext.displayName = "FamilyContext"

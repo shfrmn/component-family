@@ -1,5 +1,5 @@
 import {Task} from "./"
-import {useApi} from "../../hooks/useApi"
+import {useTasks} from "../../hooks/useTasks"
 
 interface TaskWidgetProps {
   task: {
@@ -9,6 +9,6 @@ interface TaskWidgetProps {
 }
 
 export default function TaskWidget(props: TaskWidgetProps) {
-  const {saveTask} = useApi()
+  const {saveTask} = useTasks()
   return <Task.Layout task={props.task} onSave={saveTask} />
 }

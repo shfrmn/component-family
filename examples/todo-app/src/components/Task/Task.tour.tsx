@@ -1,4 +1,4 @@
-import {useApi} from "../../hooks/useApi"
+import {useTasks} from "../../hooks/useTasks"
 import {useTour} from "../../hooks/useTour"
 import {Task} from "./"
 
@@ -11,7 +11,7 @@ interface TaskWidgetProps {
 
 export default function TaskTour(props: TaskWidgetProps) {
   const {task} = props
-  const {saveTask} = useApi()
+  const {saveTask} = useTasks()
   const {tourStep, tourCompleted, completeStep} = useTour()
   const isInputEnabled = tourCompleted || (task.id === 3 && tourStep === 0)
   const isButtonEnabled = tourCompleted || (task.id === 3 && tourStep > 0)

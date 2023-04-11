@@ -18,3 +18,10 @@
   border: 1px solid #ccc;
   border-radius: 0.5rem;
 }
+
+.errorContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  width: 100%;
+}

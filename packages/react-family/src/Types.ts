@@ -1,4 +1,4 @@
-import {ComponentProps, ComponentType} from "react"
+import {ComponentProps, ComponentType, FunctionComponent} from "react"
 
 /**
  * Base type for the config that can be provided to `createFamily` function.
@@ -25,32 +25,41 @@ export type FamilyProps<Conf extends AnyFamilyConfig> = CombinedProps<Conf> & {
    *  - Shorter syntax that allows users to alter the rendered variant dynamically
    */
   variant?: keyof Conf
+
+  /**
+   *
+   */
+  isVariantRoot?: boolean
 }
 
 /**
  * Type of the component that can render variants dynamically based on context.
  */
-export type FamilyComponent<Conf extends AnyFamilyConfig> = ComponentType<
+export type FamilyComponent<Conf extends AnyFamilyConfig> = FunctionComponent<
   FamilyProps<Conf>
 >
 
 /**
  * Props of `VariantComponent`.
  */
-export type VariantProps<
-  Conf extends AnyFamilyConfig,
-  C extends ComponentType<any>
-> = ComponentProps<C> & {
-  /**
-   * List of variants that can be rendered when the target variant is not available.
-   * Should be sorted by priority.
-   */
-  fallbackVariants?: (keyof Conf)[]
+export type VariantProps<Conf extends AnyFamilyConfig> = {
+  variants?: {
+    /**
+     * List of variants that can be rendered when the target variant is not available.
+     * Should be sorted by priority.
+     */
+    fallback?: (keyof Conf)[]
 
-  /**
-   * Variant that can be used as a placeholder while other variants are lazy-loading.
-   */
-  placeholderVariant?: keyof Conf
+    /**
+     * Variant that can be used as a placeholder while other variants are lazy-loading.
+     */
+    placeholder?: keyof Conf
+
+    /**
+     *
+     */
+    error?: keyof Conf
+  }
 }
 
 /**
@@ -59,7 +68,7 @@ export type VariantProps<
 export type VariantComponent<
   Conf extends AnyFamilyConfig,
   variant extends keyof Conf
-> = ComponentType<VariantProps<Conf, Conf[variant]>>
+> = ComponentType<ComponentProps<Conf[variant]> & VariantProps<Conf>>
 
 /**
  *

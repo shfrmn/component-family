@@ -6,27 +6,38 @@ import {
   VariantComponent,
   FamilyProps,
 } from "./Types"
-import {FamilyContext} from "./Context"
+import {FamilyContext, FamilyContextType} from "./Context"
 
 /**
  *
  */
 export function createVariantComponent<Conf extends AnyFamilyConfig>(
   variant: keyof Conf,
-  Family: FamilyComponent<Conf>
+  familyConfig: Conf,
+  FamilyComponent: FamilyComponent<Conf>
 ): VariantComponent<Conf, keyof Conf> {
-  function Variant(props: VariantProps<Conf, Conf[keyof Conf]>) {
-    const {fallbackVariants = [], placeholderVariant} = props
+  return function Variant(props: VariantProps<Conf>) {
+    const {variants} = props
     const inheritedContext = useContext(FamilyContext)
     const context = inheritedContext || {
-      variants: [variant, ...fallbackVariants],
-      placeholderVariant,
+      variants: [variant, ...(variants?.fallback || [])],
+      placeholderVariant: variants?.placeholder,
+      errorVariant: variants?.error,
+    }
+    const Family = (
+      <FamilyComponent
+        {...(props as FamilyProps<Conf>)}
+        variant={variant}
+        isVariantRoot={!inheritedContext}
+      />
+    )
+    if (inheritedContext) {
+      return Family
     }
     return (
-      <FamilyContext.Provider value={context}>
-        <Family {...(props as FamilyProps<Conf>)} variant={variant} />
+      <FamilyContext.Provider value={context as FamilyContextType}>
+        {Family}
       </FamilyContext.Provider>
     )
   }
-  return Variant
 }
