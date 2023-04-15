@@ -7,24 +7,28 @@ export {useErrorBoundary} from "react-error-boundary"
 /**
  *
  */
-type CreateFamilyOptions = AnyFamilyConfig | FullOptions
+type CreateFamilyOptions<Conf extends AnyFamilyConfig> =
+  | Conf
+  | FullOptions<Conf>
 
 /**
  *
  */
-interface FullOptions {
+interface FullOptions<Conf> {
   name?: string
-  variants: AnyFamilyConfig
+  variants: Conf
 }
 
 /**
  *
  */
-function normalizeOptions(options: CreateFamilyOptions): FullOptions {
+function normalizeOptions<Conf extends AnyFamilyConfig>(
+  options: CreateFamilyOptions<Conf>
+): FullOptions<Conf> {
   return {
     name: options.name,
     variants: options.variants || options,
-  } as FullOptions
+  } as FullOptions<Conf>
 }
 
 /**
@@ -37,7 +41,7 @@ function normalizeOptions(options: CreateFamilyOptions): FullOptions {
  * ```
  */
 export function createFamily<Conf extends AnyFamilyConfig>(
-  options: CreateFamilyOptions
+  options: CreateFamilyOptions<Conf>
 ): FamilyComponentWithVariants<Conf> {
   const {name: familyComponentName, variants: familyConfig} =
     normalizeOptions(options)
