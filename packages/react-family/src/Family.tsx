@@ -2,7 +2,7 @@ import {ComponentType, ExoticComponent, useContext} from "react"
 import {ErrorBoundary} from "react-error-boundary"
 import {prependIcon, getFamilyComponentName} from "./DevTools"
 import {AnyFamilyConfig, FamilyComponent} from "./Types"
-import {FamilyContext} from "./Context"
+import {FamilyContext, FamilyContextType} from "./Context"
 import {suspendLazy} from "./Lazy"
 
 /**
@@ -33,10 +33,14 @@ export function createFamilyComponent<Conf extends AnyFamilyConfig>(
   familyConfig: Conf,
   componentName?: string
 ): FamilyComponent<Conf> {
-  const Family: FamilyComponent<Conf> = (props) => {
-    const {variant: variantOverride, isVariantRoot, ...forwardProps} = props
+  const Family: FamilyComponent<Conf> = (
+    props,
+    /** Context override is passed when `Family` component is being inlined under a specific `Variant` */
+    contextOverride: FamilyContextType
+  ) => {
+    const {variant: variantOverride, isVariantRoot, ...componentProps} = props
     const isFamilyRoot = Boolean(!variantOverride || isVariantRoot)
-    const context = useContext(FamilyContext)
+    const context = useContext(FamilyContext) || contextOverride
     if (!context) {
       throw new Error(
         "Component family can't be rendered outside of FamilyContext. Please select a specific variant of the component."
@@ -45,13 +49,13 @@ export function createFamilyComponent<Conf extends AnyFamilyConfig>(
     const {variants, placeholderVariant, errorVariant} = context
     const Variant = selectVariant(
       familyConfig,
-      props.variant ? [props.variant, ...variants] : variants
+      variantOverride ? [variantOverride, ...variants] : variants
     )
     const LazyFallback = placeholderVariant
       ? familyConfig[placeholderVariant]
       : undefined
-    const LazyLoaded = suspendLazy({
-      props: forwardProps,
+    const WithSuspense = suspendLazy({
+      props: componentProps,
       component: Variant,
       fallback: LazyFallback,
     })
@@ -59,11 +63,11 @@ export function createFamilyComponent<Conf extends AnyFamilyConfig>(
     if (ErrorFallback && isFamilyRoot) {
       return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          {LazyLoaded}
+          {WithSuspense}
         </ErrorBoundary>
       )
     } else {
-      return LazyLoaded
+      return WithSuspense
     }
   }
   Family.displayName = componentName

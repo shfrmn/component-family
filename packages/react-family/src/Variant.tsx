@@ -15,20 +15,20 @@ export function createVariantComponent<Conf extends AnyFamilyConfig>(
   FamilyComponent: FamilyComponent<Conf>
 ): VariantComponent<Conf, keyof Conf> {
   const Variant: VariantComponent<Conf, keyof Conf> = (props) => {
-    const {variants} = props
+    const {variants, ...componentProps} = props
     const inheritedContext = useContext(FamilyContext)
     const context = inheritedContext || {
       variants: [variant, ...(variants?.fallback || [])],
       placeholderVariant: variants?.placeholder,
       errorVariant: variants?.error,
     }
-    const Family = (
-      <FamilyComponent
-        {...(props as FamilyProps<Conf>)}
-        variant={variant}
-        isVariantRoot={!inheritedContext}
-      />
-    )
+    const familyProps = {
+      ...componentProps,
+      variant,
+      isVariantRoot: !inheritedContext,
+    } as FamilyProps<Conf>
+    // Inlining family component to reduce noise in DevTools
+    const Family = FamilyComponent(familyProps, context)
     if (inheritedContext) {
       return Family
     }
