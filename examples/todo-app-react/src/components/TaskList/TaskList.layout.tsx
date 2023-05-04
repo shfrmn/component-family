@@ -9,12 +9,17 @@ interface TaskListLayoutProps {
 }
 
 export function TaskListLayout(props: TaskListLayoutProps) {
-  return (
-    <div>
-      {!props.tasks.length && "Fetching tasks..."}
-      {props.tasks.map((task) => {
+  if (!Array.isArray(props.tasks)) {
+    throw new Error(`Property 'tasks' must be an array`)
+  }
+  const renderedTasks = props.tasks.length
+    ? props.tasks.map((task) => {
         return <Task key={task.id} task={task} onSave={props.onSave} />
-      })}
-    </div>
-  )
+      })
+    : Array(5)
+        .fill(null)
+        .map((_, i) => {
+          return <Task.Placeholder key={i} />
+        })
+  return <div>{renderedTasks}</div>
 }

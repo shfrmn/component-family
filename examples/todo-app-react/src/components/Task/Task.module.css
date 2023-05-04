@@ -15,13 +15,34 @@
   padding: 10px;
   min-width: 200px;
   height: 20px;
-  border: 1px solid #ccc;
   border-radius: 0.5rem;
+
+  background-color: #ccc;
+  background: linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 60%
+    )
+    #ccc;
+  background-size: 200% 100%;
+  background-position-x: 180%;
+  animation: 1s loading ease-in-out infinite;
+}
+
+@keyframes loading {
+  to {
+    background-position-x: -20%;
+  }
 }
 
 .errorContainer {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem 0;
+  align-items: center;
+  padding: 0.5rem;
+  margin-bottom: 20px;
   width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
 }
