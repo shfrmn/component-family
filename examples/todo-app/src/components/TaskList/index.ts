@@ -1,5 +1,5 @@
 import {lazy} from "react"
-import {createFamily} from "../../../../../packages/react-family/src"
+import {createFamily} from "@component-family/react"
 import {TaskListError} from "./TaskList.error"
 import {TaskListLayout} from "./TaskList.layout"
 import {TaskListPlaceholder} from "./TaskList.placeholder"

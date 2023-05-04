@@ -1,4 +1,4 @@
-import {useErrorBoundary} from "../../../../../packages/react-family/src"
+import {useErrorBoundary} from "@component-family/react"
 import style from "./Task.module.css"
 
 interface TaskErrorProps {
