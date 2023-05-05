@@ -42,23 +42,23 @@ export type FamilyComponent<Conf extends AnyFamilyConfig> = FunctionComponent<
 /**
  * Props of `VariantComponent`.
  */
-export type VariantProps<Conf extends AnyFamilyConfig> = {
+export type VariantProps<V> = {
   variants?: {
     /**
      * List of variants that can be rendered when the target variant is not available.
      * Should be sorted by priority.
      */
-    fallback?: (keyof Conf)[]
+    fallback?: V[]
 
     /**
      * Variant that can be used as a placeholder while other variants are lazy-loading.
      */
-    placeholder?: keyof Conf
+    placeholder?: V
 
     /**
      *
      */
-    error?: keyof Conf
+    error?: V
   }
 }
 
@@ -68,7 +68,7 @@ export type VariantProps<Conf extends AnyFamilyConfig> = {
 export type VariantComponent<
   Conf extends AnyFamilyConfig,
   variant extends keyof Conf
-> = ComponentType<ComponentProps<Conf[variant]> & VariantProps<Conf>>
+> = ComponentType<ComponentProps<Conf[variant]> & VariantProps<keyof Conf>>
 
 /**
  *
@@ -81,4 +81,9 @@ type IndexedVariants<Conf extends AnyFamilyConfig> = {
  *
  */
 export type FamilyComponentWithVariants<Conf extends AnyFamilyConfig> =
-  FamilyComponent<Conf> & IndexedVariants<Conf>
+  FamilyComponent<Conf> & IndexedVariants<Conf> & {variants: (keyof Conf)[]}
+
+/**
+ * Infers the union type of possible variants from a Family component
+ */
+export type FamilyVariant<C> = C extends {variants: (infer V)[]} ? V : never

@@ -3,6 +3,7 @@ import {createVariantComponent} from "./Variant"
 import {AnyFamilyConfig, FamilyComponentWithVariants} from "./Types"
 
 export {useErrorBoundary} from "react-error-boundary"
+export type {VariantProps, FamilyVariant} from "./Types"
 
 /**
  *
@@ -48,10 +49,12 @@ export function createFamily<Conf extends AnyFamilyConfig>(
   const FamilyComponent = createFamilyComponent(
     familyConfig,
     familyComponentName
-  )
+  ) as FamilyComponentWithVariants<Conf>
+  FamilyComponent.variants = []
   for (const variant in familyConfig) {
+    FamilyComponent.variants.push(variant)
     // @ts-ignore
     FamilyComponent[variant] = createVariantComponent(variant, FamilyComponent)
   }
-  return FamilyComponent as FamilyComponentWithVariants<Conf>
+  return FamilyComponent
 }
