@@ -28,7 +28,7 @@ export function TaskListError(props: TaskListErrorProps) {
         <br />
         Here's the error message:
         <br />
-        <code className={style.errorMessage}>{error.message}</code>
+        <code className={style.errorMessage}>{error?.message}</code>
         <br />
         <br />
         Click "Try again" to fix the error.
